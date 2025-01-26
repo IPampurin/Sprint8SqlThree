@@ -15,7 +15,7 @@ type Client struct {
 	Email    string
 }
 
-// String реализует метод интерфейса fmt.Stringer для Client, возвращает строковое представление объекта Client.
+// String реализует метод интерфейса fmt.Stringer для Sale, возвращает строковое представление объекта Client.
 // Теперь, если передать объект Client в fmt.Println(), то выведется строка, которую вернёт эта функция.
 func (c Client) String() string {
 	return fmt.Sprintf("ID: %d FIO: %s Login: %s Birthday: %s Email: %s",
@@ -32,10 +32,10 @@ func main() {
 
 	// добавление нового клиента
 	newClient := Client{
-		FIO:      "Чапаев Василий Иванович", // укажите ФИО
-		Login:    "Chapay",                  // укажите логин
-		Birthday: "19910223",                // укажите день рождения
-		Email:    "ural@ural.ru",            // укажите почту
+		FIO:      "Евтушенко Григорий Викторович",
+		Login:    "evtushenko86",
+		Birthday: "19860327",
+		Email:    "evtushenko86@gmail.com",
 	}
 
 	id, err := insertClient(db, newClient)
@@ -53,7 +53,7 @@ func main() {
 	fmt.Println(client)
 
 	// обновление логина клиента
-	newLogin := "VasyaChapay" // укажите новый логин
+	newLogin := "evtushenko8603"
 	err = updateClientLogin(db, newLogin, id)
 	if err != nil {
 		fmt.Println(err)
@@ -84,12 +84,12 @@ func main() {
 }
 
 func insertClient(db *sql.DB, client Client) (int64, error) {
-	// напишите здесь код для добавления новой записи в таблицу clients
-	res, err := db.Exec("INSERT INTO clients (FIO, Login, Birthday, Email) VALUES (:FIO, :Login, :Birthday, :Email)",
-		sql.Named("FIO", client.FIO),
-		sql.Named("Login", client.Login),
-		sql.Named("Birthday", client.Birthday),
-		sql.Named("Email", client.Email))
+
+	res, err := db.Exec("INSERT INTO clients (fio, login, birthday, email) VALUES (:fio, :login, :birthday, :email)",
+		sql.Named("fio", client.FIO),
+		sql.Named("login", client.Login),
+		sql.Named("birthday", client.Birthday),
+		sql.Named("email", client.Email))
 	if err != nil {
 		return 0, err
 	}
@@ -99,27 +99,20 @@ func insertClient(db *sql.DB, client Client) (int64, error) {
 		return 0, err
 	}
 
-	return id, nil // вместо 0 верните идентификатор добавленной записи
+	return id, nil
 }
 
 func updateClientLogin(db *sql.DB, login string, id int64) error {
-	// напишите здесь код для обновления поля login в таблице clients у записи с заданным id
+	
 	_, err := db.Exec("UPDATE clients SET login = :login WHERE id = :id",
 		sql.Named("login", login),
 		sql.Named("id", id))
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func deleteClient(db *sql.DB, id int64) error {
-	// напишите здесь код для удаления записи из таблицы clients по заданному id
 	_, err := db.Exec("DELETE FROM clients WHERE id = :id", sql.Named("id", id))
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func selectClient(db *sql.DB, id int64) (Client, error) {
